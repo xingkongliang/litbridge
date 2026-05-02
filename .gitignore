@@ -2,4 +2,12 @@ __pycache__/
 *.pyc
 .env
 .DS_Store
-chroma_db/
+.streamlit/secrets.toml
+
+# PDFs are heavy (148MB) — don't commit; runtime uses pre-indexed embeddings
+data/papers/related-papers/
+data/papers/unrelated-papers/
+
+# Keep small assets and pre-built index
+!data/papers/user-test-paper.docx
+!data/index/
