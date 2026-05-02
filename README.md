@@ -8,6 +8,12 @@
 
 <p align="center">
   <a href="https://litbridge.streamlit.app/"><strong>🚀 Live demo →</strong></a>
+  &nbsp;·&nbsp;
+  <em>cold start ~30s if the app is asleep — bundled 13-paper sample loads automatically</em>
+</p>
+
+<p align="center">
+  <img src="assets/demo.gif" alt="LitBridge demo: click a draft paragraph, AI surfaces the matching paper and highlights the source chunk, then insert an inline citation in one click" width="900">
 </p>
 
 LitBridge helps researchers and students **find the most relevant papers from their personal reading list** for the section they're writing right now — no more skimming 30 PDFs to remember which one had the result you need to cite.
