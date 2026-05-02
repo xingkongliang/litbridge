@@ -16,9 +16,21 @@
   <img src="assets/demo.gif" alt="LitBridge demo: click a draft paragraph, AI surfaces the matching paper and highlights the source chunk, then insert an inline citation in one click" width="900">
 </p>
 
-LitBridge helps researchers and students **find the most relevant papers from their personal reading list** for the section they're writing right now — no more skimming 30 PDFs to remember which one had the result you need to cite.
+When writing a literature review, the hard part isn't *finding papers once* — it's **remembering which paper in your reading list supports the sentence you're writing right now**. LitBridge turns your personal library into paragraph-level citation suggestions, with the source excerpt highlighted so you can verify before you cite.
 
 Built for the **ANU AI Buildathon 2026**.
+
+## 5-minute judge path
+
+Open the [live demo](https://litbridge.streamlit.app/) and:
+
+1. Keep **"Use sample"** selected (a 5-paragraph draft on LLM agents loads automatically against a 13-paper reference library).
+2. Click **Analyze** — wait a few seconds for Claude to score paragraphs against the index.
+3. Click any paragraph in the draft pane → see the matched paper + a **highlighted source chunk** in the middle pane.
+4. Hit **➡️ Insert this citation** to drop an inline `[Author, Year]` into the draft.
+5. Switch to the **Topic Search** tab and try `How does chain-of-thought prompting improve reasoning in LLMs?` to see multi-paper synthesis with `[1][2]` citations.
+
+> If the app is waking from sleep, give it ~30 s. The bundled sample requires no upload.
 
 ## Features
 
