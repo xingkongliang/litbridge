@@ -7,13 +7,23 @@
 <p align="center"><em>Your literature library × your paper — AI connects them.</em></p>
 
 <p align="center">
-  <a href="https://litbridge.streamlit.app/"><strong>🚀 Live demo →</strong></a>
+  <a href="https://litbridge.streamlit.app/"><strong>🚀 Live demo</strong></a>
   &nbsp;·&nbsp;
-  <em>cold start ~30s if the app is asleep — bundled 13-paper sample loads automatically</em>
+  <a href="assets/LitBridge__AI_Lit_Manager.mp4"><strong>🎥 Intro video</strong></a>
+  &nbsp;·&nbsp;
+  <a href="assets/LitBridge_Buildathon_Presentation.pdf"><strong>📑 Pitch deck (PDF)</strong></a>
+</p>
+
+<p align="center">
+  <em>Cold start ~30s if the app is asleep — the bundled 13-paper sample loads automatically.</em>
 </p>
 
 <p align="center">
   <img src="assets/demo.gif" alt="LitBridge demo: click a draft paragraph, AI surfaces the matching paper and highlights the source chunk, then insert an inline citation in one click" width="900">
+</p>
+
+<p align="center">
+  <video src="https://github.com/xingkongliang/litbridge/raw/main/assets/LitBridge__AI_Lit_Manager.mp4" controls width="900"></video>
 </p>
 
 When writing a literature review, the hard part isn't *finding papers once* — it's **remembering which paper in your reading list supports the sentence you're writing right now**. LitBridge turns your personal library into paragraph-level citation suggestions, with the source excerpt highlighted so you can verify before you cite.
