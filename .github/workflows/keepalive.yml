@@ -12,11 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Ping LitBridge (follow redirects, browser-ish UA)
+      - name: Ping LitBridge root (no redirect follow — Streamlit auth loops on -L)
         run: |
-          curl -L -sS -o /dev/null \
-            -w "HTTP %{http_code} · total %{time_total}s · final %{url_effective}\n" \
+          curl -sS -o /dev/null \
+            -w "ROOT  HTTP %{http_code} · %{time_total}s · %{url_effective}\n" \
             -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36" \
             -H "Accept: text/html,application/xhtml+xml" \
-            --max-time 60 \
-            https://litbridge.streamlit.app/
+            --max-time 30 \
+            https://litbridge.streamlit.app/ || true
+
+      - name: Ping health endpoint (belt-and-suspenders)
+        run: |
+          curl -sS -o /dev/null \
+            -w "HEALTH HTTP %{http_code} · %{time_total}s\n" \
+            --max-time 10 \
+            https://litbridge.streamlit.app/_stcore/health || true
