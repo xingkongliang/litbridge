@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import re
+import math
+import os
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
@@ -104,10 +106,11 @@ def is_substantive(paragraph: str, min_chars: int = 150) -> bool:
 
 
 def load_embedder():
-    """Lazy import + load — keeps cold-start path light when not needed."""
+    """Lazy import + cache-only load to avoid UI hangs from model downloads."""
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(EMBED_MODEL)
+    allow_download = os.environ.get("LITBRIDGE_ALLOW_MODEL_DOWNLOAD") == "1"
+    return SentenceTransformer(EMBED_MODEL, local_files_only=not allow_download)
 
 
 def embed_texts(model, texts: list[str]) -> np.ndarray:
@@ -148,3 +151,50 @@ def retrieve(
     scores = embeddings @ q
     top = np.argsort(-scores)[:k]
     return [(chunks[i], float(scores[i])) for i in top]
+
+
+def keyword_retrieve(query: str, chunks: list[Chunk], k: int = 5) -> list[tuple[Chunk, float]]:
+    """Small dependency-free fallback when the local embedding model is unavailable."""
+    terms = [
+        t
+        for t in re.findall(r"[a-zA-Z][a-zA-Z0-9]{2,}", query.lower())
+        if t
+        not in {
+            "the",
+            "and",
+            "for",
+            "with",
+            "that",
+            "this",
+            "from",
+            "into",
+            "does",
+            "how",
+            "role",
+        }
+    ]
+    if not terms:
+        return []
+
+    query_terms = set(terms)
+    scored: list[tuple[Chunk, float]] = []
+    n_chunks = len(chunks)
+    doc_freq = {
+        term: sum(1 for c in chunks if term in c.text.lower()) or 1
+        for term in query_terms
+    }
+    for chunk in chunks:
+        text = chunk.text.lower()
+        score = 0.0
+        for term in query_terms:
+            tf = text.count(term)
+            if tf:
+                score += (1.0 + math.log(tf)) * math.log((n_chunks + 1) / doc_freq[term])
+        if score > 0:
+            scored.append((chunk, score))
+
+    scored.sort(key=lambda item: -item[1])
+    if not scored:
+        return []
+    max_score = scored[0][1] or 1.0
+    return [(c, s / max_score) for c, s in scored[:k]]

@@ -13,6 +13,7 @@ from rag import (
     Chunk,
     embed_texts,
     is_substantive,
+    keyword_retrieve,
     load_embedder,
     load_index,
     parse_docx,
@@ -55,6 +56,20 @@ def get_index() -> tuple[list[Chunk], np.ndarray]:
 def get_embedder():
     """Load sentence-transformers once and reuse across reruns."""
     return load_embedder()
+
+
+def retrieve_for_text(query: str, k: int) -> tuple[list[tuple[Chunk, float]], str]:
+    try:
+        embedder = get_embedder()
+        q_emb = embed_texts(embedder, [query])[0]
+        return retrieve(q_emb, chunks, embeddings, k=k), "semantic"
+    except Exception as exc:
+        st.warning(
+            "Local embedding model is not cached, using keyword fallback. "
+            "Run once with model download enabled before the demo for semantic search."
+        )
+        st.caption(f"Fallback reason: {type(exc).__name__}: {exc}")
+        return keyword_retrieve(query, chunks, k=k), "keyword"
 
 
 def _label_badge(label: str) -> str:
@@ -139,7 +154,16 @@ with tab_cite:
         f"(headers / equations / references stripped)"
     )
 
-    max_n = st.slider("How many paragraphs to analyze", 1, max(1, len(targets)), min(4, len(targets)) if targets else 1)
+    if targets:
+        max_n = st.slider(
+            "How many paragraphs to analyze",
+            1,
+            len(targets),
+            min(4, len(targets)),
+        )
+    else:
+        max_n = 0
+        st.info("No substantive paragraphs found. Upload or paste longer prose paragraphs.")
     k = st.slider("Top-K candidates per paragraph", 1, 5, 3)
 
     if st.button("🚀 Run Cite-Back", type="primary", disabled=not targets):
@@ -147,14 +171,13 @@ with tab_cite:
         if not anth_key:
             st.error("ANTHROPIC_API_KEY missing.")
             st.stop()
-        embedder = get_embedder()
         progress = st.progress(0.0, text="Working…")
         for i, para in enumerate(targets[:max_n], 1):
             progress.progress(i / max_n, text=f"Paragraph {i}/{max_n}")
             with st.expander(f"Paragraph {i} ({len(para)} chars)", expanded=True):
                 st.markdown(f"> {para[:400]}{'…' if len(para) > 400 else ''}")
-                q_emb = embed_texts(embedder, [para])[0]
-                hits = retrieve(q_emb, chunks, embeddings, k=k * 2)
+                hits, mode = retrieve_for_text(para, k=k * 2)
+                st.caption(f"Retrieval mode: {mode}")
                 # de-dup by file, keep top per file
                 seen, dedup = set(), []
                 for c, s in hits:
@@ -194,15 +217,14 @@ with tab_topic:
         if not anth_key:
             st.error("ANTHROPIC_API_KEY missing.")
             st.stop()
-        embedder = get_embedder()
-        with st.spinner("Embedding query…"):
-            q_emb = embed_texts(embedder, [topic])[0]
-        hits = retrieve(q_emb, chunks, embeddings, k=k)
+        with st.spinner("Retrieving sources…"):
+            hits, mode = retrieve_for_text(topic, k=k)
         with st.spinner("Synthesizing summary with Claude…"):
             summary = topic_summary(anth_key, topic, hits)
         st.markdown("### 📝 Summary")
         st.markdown(summary)
         st.markdown("### 📎 Sources")
+        st.caption(f"Retrieval mode: {mode}")
         render_hits(hits)
         related = sum(1 for c, _ in hits if c.label == "related")
         st.caption(f"🟢 retrieval precision: {related}/{k} from related-papers")
