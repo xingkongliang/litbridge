@@ -22,6 +22,8 @@
   <img src="assets/demo.gif" alt="LitBridge demo: click a draft paragraph, AI surfaces the matching paper and highlights the source chunk, then insert an inline citation in one click" width="900">
 </p>
 
+https://github.com/user-attachments/assets/23fd48c2-6c18-4e0e-a8ac-3ac2e755d461
+
 When writing a literature review, the hard part isn't *finding papers once* — it's **remembering which paper in your reading list supports the sentence you're writing right now**. LitBridge turns your personal library into paragraph-level citation suggestions, with the source excerpt highlighted so you can verify before you cite.
 
 Unlike a generic ChatGPT + RAG search box, LitBridge starts from the paragraph you are writing, retrieves candidate evidence from your own library, then shows the exact source chunk beside your draft before you insert a citation.
