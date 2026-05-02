@@ -261,12 +261,12 @@ with tab_cite:
         # ─ Input form ─
         st.subheader("Find citations for the draft paragraph you are writing")
         st.caption(
-            "Start with the bundled sample to see LitBridge match draft paragraphs to "
-            "evidence from a 13-paper LLM-agent library."
+            "The bundled sample is a 5-paragraph literature review on LLM agents — "
+            "exactly the kind of writing where you need to cite specific papers from your library."
         )
         src = st.radio(
             "Input source",
-            [f"Use sample (`{SAMPLE_DOCX.name}`)", "Upload .docx", "Paste text"],
+            ['Use sample: "LLM-based Autonomous Agents: A Survey"', "Upload .docx", "Paste text"],
             horizontal=True,
             key="cite_src",
         )
@@ -275,7 +275,7 @@ with tab_cite:
         if src.startswith("Use sample"):
             if SAMPLE_DOCX.exists():
                 body_paragraphs = parse_docx(SAMPLE_DOCX)
-                draft_title = SAMPLE_DOCX.name
+                draft_title = "LLM-based Autonomous Agents: A Survey (sample)"
             else:
                 st.warning("Sample docx missing.")
         elif src == "Upload .docx":
@@ -321,7 +321,7 @@ with tab_cite:
             st.info("No citation-ready paragraphs found. Upload or paste longer prose paragraphs.")
 
         if src.startswith("Use sample"):
-            analyze_label = "🚀 Analyze sample draft"
+            analyze_label = "🚀 Analyze sample survey draft"
         elif src == "Upload .docx":
             analyze_label = "🚀 Analyze uploaded draft"
         else:

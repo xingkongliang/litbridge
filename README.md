@@ -26,8 +26,8 @@ Built for the **ANU AI Buildathon 2026**.
 
 Open the [live demo](https://litbridge.streamlit.app/) and:
 
-1. Keep **"Use sample"** selected (a 5-paragraph draft on LLM agents loads automatically against a 13-paper reference library).
-2. Click **Analyze sample draft** — wait a few seconds for Claude to score paragraphs against the index.
+1. Keep **"Use sample"** selected — a 5-paragraph draft titled *"LLM-based Autonomous Agents: A Survey"* loads automatically, paired with a 13-paper reference library covering exactly the works such a survey would cite (GPT-3, InstructGPT, CoT, ReAct, Generative Agents, Sparks of AGI, …).
+2. Click **Analyze sample survey draft** — wait a few seconds for Claude to score paragraphs against the index.
 3. Click any paragraph in the draft pane → see the matched paper + a **highlighted source chunk** in the middle pane.
 4. Hit **➡️ Insert this citation** to drop an inline citation marker into the draft.
 5. Switch to the **Topic Search** tab and try `How does chain-of-thought prompting improve reasoning in LLMs?` to see multi-paper synthesis with `[1][2]` citations.
@@ -84,7 +84,10 @@ The pre-built index (`data/index/chunks.json` + `embeddings.npy`) is committed t
 
 ## Sample dataset
 
-The repo ships with a **13-paper LLM-Agent corpus** (GPT-3, InstructGPT, Chain-of-Thought, Generative Agents, Sparks of AGI, …) and a **5-paragraph sample draft** (`data/papers/AI-Agent/user-draft-llm-agents.docx`) suitable for a 3-minute demo. Paper PDFs are gitignored — only the index and metadata travel with the repo.
+The repo ships with:
+
+- **Reference library** — 13 foundational LLM-agent papers: GPT-3, InstructGPT, Chain-of-Thought, ReAct, Toolformer, Reflexion, Generative Agents, Voyager, SayCan, Sparks of AGI, etc. (PDFs gitignored; only the index + metadata travel with the repo.)
+- **Sample draft** — a 5-paragraph literature review titled *"LLM-based Autonomous Agents: A Survey"* (`data/papers/AI-Agent/user-draft-llm-agents.docx`) covering pretraining, prompting, alignment, embodiment, and multi-agent simulation. Each paragraph is the kind of high-level claim that needs ~1 supporting paper from the library — perfect for showing one-click cite-back end-to-end in a 3-minute demo.
 
 To re-index with your own corpus:
 
