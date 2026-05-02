@@ -7,7 +7,8 @@ from dataclasses import dataclass
 
 import anthropic
 
-MODEL = "claude-haiku-4-5-20251001"
+MODEL = "claude-haiku-4-5"
+REQUEST_TIMEOUT_SECONDS = 30.0
 
 
 @dataclass
@@ -21,7 +22,7 @@ class CiteBackVerdict:
 
 
 def _client(api_key: str) -> anthropic.Anthropic:
-    return anthropic.Anthropic(api_key=api_key)
+    return anthropic.Anthropic(api_key=api_key, timeout=REQUEST_TIMEOUT_SECONDS)
 
 
 def _extract_json(text: str) -> dict | list:
