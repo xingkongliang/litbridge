@@ -1,38 +1,73 @@
-# LitBridge 📚🔗
+<p align="center">
+  <img src="assets/logo.png" alt="LitBridge logo" width="180">
+</p>
 
-> Your literature library × your paper — AI connects them.
+<h1 align="center">LitBridge</h1>
 
-LitBridge helps students **find the most relevant papers from their reading list** and understand which ones actually matter for their assignment or research topic. No more drowning in 30 PDFs.
+<p align="center"><em>Your literature library × your paper — AI connects them.</em></p>
+
+<p align="center">
+  <a href="https://litbridge.streamlit.app/"><strong>🚀 Live demo →</strong></a>
+</p>
+
+LitBridge helps researchers and students **find the most relevant papers from their personal reading list** for the section they're writing right now — no more skimming 30 PDFs to remember which one had the result you need to cite.
 
 Built for the **ANU AI Buildathon 2026**.
 
 ## Features
 
-- **Smart Cite-Back**: Upload a draft paper → get AI-recommended citations from your library, matched paragraph by paragraph
-- **Topic Search**: Enter a research question → get summaries of the most relevant papers, with source excerpts
-- **RAG Pipeline**: Academic-grade retrieval with section-aware chunking and semantic matching
+- **Smart Cite-Back** — three-pane workspace: a draft editor on the right, a reference reader in the middle, your library on the left. Click a draft paragraph → AI surfaces the best-matching paper, highlights the relevant chunk, and lets you insert an inline citation in one click.
+- **Topic Search** — type a research question, get a multi-paper summary with inline `[1][2]` citations and source excerpts.
+- **RAG pipeline** — section-aware chunking (drops References/Bibliography), semantic retrieval over locally-cached embeddings, with a keyword fallback if the embedder isn't available offline.
 
-## Tech Stack
+## Tech stack
 
-- **Frontend**: Streamlit
-- **PDF Parsing**: PyMuPDF
-- **Embeddings**: Anthropic Voyage (via API) / Sentence-Transformers (local)
-- **Vector DB**: ChromaDB
-- **LLM**: Claude 3.5 Sonnet (Anthropic)
+- **UI**: Streamlit (wide layout, custom CSS)
+- **PDF / DOCX parsing**: PyMuPDF + python-docx
+- **Embeddings**: `sentence-transformers/all-MiniLM-L6-v2` (local, ~80 MB; L2-normalized)
+- **Index**: numpy cosine top-k (no vector DB — the corpus is small enough to keep in RAM)
+- **LLM**: Claude (`claude-haiku-4-5`) via the official `anthropic` SDK
 
-## Getting Started
+## Quickstart
 
 ```bash
-# Clone
-git clone https://github.com/tianliang-tl/litbridge.git
+# 1. Clone
+git clone https://github.com/xingkongliang/litbridge.git
 cd litbridge
 
-# Install dependencies
+# 2. Install dependencies (Python 3.11 recommended — see runtime.txt)
 pip install -r requirements.txt
+# or with conda: conda env create / conda run -n llm pip install -r requirements.txt
 
-# Run
+# 3. Set your Anthropic API key
+echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
+
+# 4. Run
 streamlit run app.py
 ```
+
+The pre-built index (`data/index/chunks.json` + `embeddings.npy`) is committed to the repo, so the app works out-of-the-box on the bundled sample dataset. No re-embedding required at startup.
+
+## Sample dataset
+
+The repo ships with a **13-paper LLM-Agent corpus** (GPT-3, InstructGPT, Chain-of-Thought, Generative Agents, Sparks of AGI, …) and a **5-paragraph sample draft** (`data/papers/AI-Agent/user-draft-llm-agents.docx`) suitable for a 3-minute demo. Paper PDFs are gitignored — only the index and metadata travel with the repo.
+
+To re-index with your own corpus:
+
+```bash
+# Drop PDFs into data/papers/AI-Agent/reference/ then:
+LITBRIDGE_ALLOW_MODEL_DOWNLOAD=1 conda run -n llm python scripts/preindex.py
+```
+
+## Deploy
+
+The live build runs on Streamlit Community Cloud at <https://litbridge.streamlit.app/>. To deploy your own fork:
+
+1. Push to GitHub
+2. https://share.streamlit.io → New app → point at `app.py`
+3. Settings → Secrets: paste `ANTHROPIC_API_KEY = "sk-ant-..."`
+
+`runtime.txt` and `st.secrets` integration are already wired up. First-run cold start ≈ 2 minutes (dependencies + embedder model download); after the app is idle it sleeps and takes ~30 s to wake — open the link a few minutes before any demo.
 
 ## Team
 

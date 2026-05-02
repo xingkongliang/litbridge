@@ -4,10 +4,10 @@ __pycache__/
 .DS_Store
 .streamlit/secrets.toml
 
-# PDFs are heavy (148MB) — don't commit; runtime uses pre-indexed embeddings
-data/papers/related-papers/
-data/papers/unrelated-papers/
+# Top-level reference/ holds the React design mock (UI.ts) — not part of runtime.
+/reference/
 
-# Keep small assets and pre-built index
-!data/papers/user-test-paper.docx
-!data/index/
+# PDFs are heavy — don't commit. Runtime loads pre-indexed embeddings.
+data/papers/material/
+data/papers/AI-Agent/reference/
+data/papers/AI-Agent/*.pdf

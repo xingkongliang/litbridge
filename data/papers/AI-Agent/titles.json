@@ -1,0 +1,67 @@
+{
+  "1912.06680.pdf": {
+    "title": "OpenAI Five: Dota 2 with Large-Scale Deep RL",
+    "authors": "Berner et al.",
+    "year": "2019"
+  },
+  "2005.14165.pdf": {
+    "title": "GPT-3: Language Models are Few-Shot Learners",
+    "authors": "Brown et al.",
+    "year": "2020"
+  },
+  "2101.06804.pdf": {
+    "title": "What Makes Good In-Context Examples for GPT-3?",
+    "authors": "Liu et al.",
+    "year": "2021"
+  },
+  "2108.07258.pdf": {
+    "title": "On the Opportunities and Risks of Foundation Models",
+    "authors": "Bommasani et al.",
+    "year": "2021"
+  },
+  "2109.10862.pdf": {
+    "title": "Recursively Summarizing Books with Human Feedback",
+    "authors": "Wu et al.",
+    "year": "2021"
+  },
+  "2201.11903.pdf": {
+    "title": "Chain-of-Thought Prompting Elicits Reasoning in LLMs",
+    "authors": "Wei et al.",
+    "year": "2022"
+  },
+  "2203.02155.pdf": {
+    "title": "InstructGPT: Training LMs to Follow Instructions with RLHF",
+    "authors": "Ouyang et al.",
+    "year": "2022"
+  },
+  "2207.05608.pdf": {
+    "title": "Inner Monologue: Embodied Reasoning through LM Planning",
+    "authors": "Huang et al.",
+    "year": "2022"
+  },
+  "2212.14024.pdf": {
+    "title": "Demonstrate-Search-Predict: Composing Retrieval and LMs",
+    "authors": "Khattab et al.",
+    "year": "2022"
+  },
+  "2301.07543.pdf": {
+    "title": "LLMs as Simulated Economic Agents (Homo Silicus)",
+    "authors": "Horton et al.",
+    "year": "2023"
+  },
+  "2303.12712.pdf": {
+    "title": "Sparks of Artificial General Intelligence: Early GPT-4 Experiments",
+    "authors": "Bubeck et al.",
+    "year": "2023"
+  },
+  "2305.09800.pdf": {
+    "title": "Mirages: On Anthropomorphism in Dialogue Systems",
+    "authors": "Abercrombie et al.",
+    "year": "2023"
+  },
+  "Generative_Agents_Interactive_Simulacra_of_Human_Behavior.pdf": {
+    "title": "Generative Agents: Interactive Simulacra of Human Behavior",
+    "authors": "Park et al.",
+    "year": "2023"
+  }
+}
