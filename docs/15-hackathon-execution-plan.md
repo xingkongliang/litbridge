@@ -20,9 +20,11 @@
 
 ### Feature A — Smart Cite-Back（亮点）
 
-用户上传一篇正在写的文章 + 一批 PDF 文献库。系统逐段分析文章，从文献库检索最相关的片段，**建议在文章具体位置插入引用**，用户确认。
+用户上传一篇正在写的文章 + 一批 PDF 文献库。系统逐段分析文章，对每段给出 **Top-3 引用建议**（带原文片段、文件名、页码、相关度）。
 
-差异化：市面上没有「自己的库 × 自己的文章 → 智能插入」这一档。Sourcely 偏本科水平，Elicit/Consensus 只搜外部库。
+**砍掉的复杂交互**：一键插入 / 右侧拖拽 / markdown 导出。亮点靠**匹配效果**，不靠 UI。评审看的是"AI 真的找对了相关文献"，不是"插入按钮好不好用"。
+
+差异化：市面上没有「自己的库 × 自己的文章 → 智能匹配」这一档。Sourcely 偏本科水平，Elicit/Consensus 只搜外部库。
 
 ### Feature B — Topic Search（兜底）
 
@@ -38,14 +40,15 @@
 
 | 优先级 | 内容 | 不能跳的理由 |
 |---|---|---|
+| **P0（前 30 分钟）** | Streamlit 单页骨架 + mock 结果展示 | 不先有 app.py，后面全是空中楼阁 |
 | **P0** | 5-10 篇同领域 PDF + 一篇半成品文章（mock 数据） | 没有数据 demo 直接零分；可与编码并行做 |
-| **P0** | PDF → chunks → ChromaDB 入库管线 | A 和 B 共用 |
+| **P0** | PDF → chunks → 向量检索 入库管线（先内存索引） | A 和 B 共用 |
 | **P0** | Feature B（Topic 搜索 + 总结）端到端 | 兜底 demo，必须能跑 |
-| **P1** | Feature A（段落级引用建议） | 差异化亮点；B 稳了再做 |
-| **P1** | Pitch 一句话 + demo 脚本 | 评审看的是讲故事，不是代码 |
+| **P0** | Feature A（逐段 Top-3 引用建议，**纯展示，不做插入交互**） | 亮点；B 跑通后并行做，不要等 B 打磨完 |
+| **P1** | Pitch 一句话 + demo 脚本 + 预置索引 | 评审看的是讲故事，不是代码 |
 | **P2** | UI 美化、错误处理、边界情况 | 只在前面都跑通后做 |
 
-**5h 时间点强制冻结**：如果 Feature A 还没跑通，停止开发，全力打磨 demo + 排练。
+**4.5h 时间点强制功能冻结**（不是 5h）：剩下 2h 全部用于 demo 数据预置、缓存、排练、兜底截图。Hackathon 输在最后 1h 还在改 bug。
 
 ---
 
@@ -55,9 +58,9 @@
 |---|---|---|
 | 前端 | Streamlit | `app.py` 单入口 |
 | PDF 解析 | PyMuPDF (`fitz`) | 不引入 `unstructured`（依赖重） |
-| 分块 | 固定 token + overlap（建议 500/100） | **不要按 section 分块**（见坑 #1） |
-| Embedding | `sentence-transformers` 本地模型 `all-MiniLM-L6-v2` | 离线、免费、无配额；wifi 挂了也能 demo |
-| 向量库 | ChromaDB persistent client（`./chroma_db/`） | |
+| 分块 | **段落合并到 400-700 tokens** | 不要按 section 分块（见坑 #1）；500/100 固定切会把引用证据切碎 |
+| Embedding | `sentence-transformers` 本地模型 `all-MiniLM-L6-v2` | 离线、免费、无配额；**模型必须提前下载并 warm up**，现场首次下载会卡死 |
+| 向量库 | ChromaDB **内存 client**（`chromadb.Client()`） | hackathon 不需要 persistent；跑稳了再说 |
 | LLM | Anthropic Claude（`anthropic` SDK） | 默认 `claude-haiku-4-5-20251001`，关键总结用 `claude-sonnet-4-6` |
 
 ---
@@ -94,17 +97,35 @@ ChromaDB client、embedding model 用 `@st.cache_resource` 包住，否则每次
 
 候选钩子：「为什么你看完 30 篇 PDF 还不知道哪几篇真有用？」+「你的文献库，你的文章，AI 帮你把它们连起来」。让评审 5 秒内 get 到 pain point。
 
+### 8. 比算法更容易炸的工程坑
+
+这些不解决，最后 1h 必爆：
+
+- **PDF 提取乱码** — 双栏 / 公式 / 扫描件 PyMuPDF 可能给一堆 ligature 乱码。demo PDF 必须**提前抽一遍验过**。
+- **参考文献段污染检索** — 论文末尾的 References 章节会被分块进库，检索时返回一堆引用条目当成证据。**必须截断**（关键词 "References" / "Bibliography" 截断，或丢弃尾部 15%）。
+- **Streamlit rerun 重复 ingest** — 上传文件后任何交互都会触发 rerun，没缓存就反复处理 PDF。`@st.cache_resource` 包索引、`@st.cache_data` 包 ingest 函数。
+- **Claude JSON 解析失败** — 模型偶尔会返回带前后说明的 JSON。用 `response_format` 或正则提取 `\{.*\}`，**必须 try/except 兜底**。
+- **API key / 网络** — 比赛场地 wifi 不稳是常态。embedding 已用本地模型，Claude 这一路要有"网络失败时显示缓存示例"的兜底。
+
+### 9. 现场 ingest 不能让评审等
+
+Demo 时**绝对不要**让评审看着 ingest 5-10 篇 PDF 的进度条转 1 分钟。预置索引（程序启动时自动加载 `data/pdfs/` 下所有文件并入库），demo 流程里 PDF 上传只是"装样子"。
+
 ---
 
 ## 六、Demo 路径（评审看的就是这条路径）
 
 ```
-1. 上传 5-10 篇 PDF（已预先准备）
-2. 进度条显示 ingest（PyMuPDF + embedding + ChromaDB）
-3. 选 Feature B：输入 topic → 显示 3-5 篇相关文献摘要 + 原文片段
-4. 选 Feature A：粘贴半成品文章 → 段落高亮 + 右侧引用建议 + 一键插入
-5. 导出带引用的 markdown
+1. 启动时索引已预置好，UI 显示「已加载 N 篇文献」
+   （上传按钮可以露出，但 demo 不实际触发现场 ingest）
+2. 选 Feature B：输入 topic → 显示 3-5 篇相关文献摘要
+   每条必须带：文件名 · 页码 · 原文片段 · 相关度
+3. 选 Feature A：粘贴半成品文章 → 段落级 Top-3 引用建议
+   每条同样带：文件名 · 页码 · 原文片段 · 相关度
+4. 一句话总结："你的文献库 × 你的文章，AI 帮你连起来"
 ```
+
+**可信度三件套**（文件名 / 页码 / 原文片段）必须出现在每个推荐结果里，否则评审默认你在编。
 
 任何 PR / 改动先问：**这一步对 demo 路径有没有帮助？** 没有就先不做。
 
@@ -119,3 +140,7 @@ ChromaDB client、embedding model 用 `@st.cache_resource` 包住，否则每次
 - ❌ 用户系统、多租户、登录
 - ❌ 写新的 .md 文档（除非 demo 要展示）
 - ❌ OpenAI（已切到 Anthropic，commit `b7dbeb1`）
+- ❌ 一键插入 / 拖拽 / markdown 导出（A 只展示推荐，不做编辑器交互）
+- ❌ ChromaDB persistent 存储（先内存）
+
+**必须保留**（不能砍）：每条推荐结果的 **文件名 + 页码 + 原文片段**——这是 AI 推荐可信度的命根子。
