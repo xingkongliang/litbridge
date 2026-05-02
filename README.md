@@ -9,8 +9,6 @@
 <p align="center">
   <a href="https://litbridge.streamlit.app/"><strong>🚀 Live demo</strong></a>
   &nbsp;·&nbsp;
-  <a href="assets/LitBridge__AI_Lit_Manager.mp4"><strong>🎥 Intro video</strong></a>
-  &nbsp;·&nbsp;
   <a href="assets/LitBridge_Buildathon_Presentation.pdf"><strong>📑 Pitch deck (PDF)</strong></a>
 </p>
 
@@ -24,11 +22,7 @@
 
 https://github.com/user-attachments/assets/23fd48c2-6c18-4e0e-a8ac-3ac2e755d461
 
-When writing a literature review, the hard part isn't *finding papers once* — it's **remembering which paper in your reading list supports the sentence you're writing right now**. LitBridge turns your personal library into paragraph-level citation suggestions, with the source excerpt highlighted so you can verify before you cite.
-
-Unlike a generic ChatGPT + RAG search box, LitBridge starts from the paragraph you are writing, retrieves candidate evidence from your own library, then shows the exact source chunk beside your draft before you insert a citation.
-
-Built for the **ANU AI Buildathon 2026**.
+When writing a literature review, the hard part isn't *finding papers once* — it's **remembering which paper in your reading list supports the sentence you're writing right now**. Unlike a generic ChatGPT + RAG search box, LitBridge starts from the paragraph you are writing, retrieves candidate evidence from your own library, and shows the exact source chunk beside your draft so you can verify before you insert a citation.
 
 ## 5-minute judge path
 
@@ -114,6 +108,6 @@ The live build runs on Streamlit Community Cloud at <https://litbridge.streamlit
 
 `runtime.txt` and `st.secrets` integration are already wired up. First-run cold start ≈ 2 minutes (dependencies + embedder model download); after the app is idle it sleeps and takes ~30 s to wake — open the link a few minutes before any demo.
 
-## Team
+## Acknowledgements
 
-Built with ❤️ for ANU AIMSOC & ANUEC AI Buildathon.
+Built with ❤️ for the **ANU AI Buildathon 2026** (ANU AIMSOC & ANUEC).
