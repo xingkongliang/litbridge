@@ -452,8 +452,8 @@ with tab_cite:
                 st.markdown(
                     f"""
 <div class="lb-ai-card">
-  <div class="lb-ai-title">✨ AI 推荐引用 · 匹配度 {pct}%</div>
-  <div class="lb-ai-reason"><b>分析：</b>{html_escape(active_match['reason'] or '(no reason)')}</div>
+  <div class="lb-ai-title">✨ AI Citation Suggestion · match {pct}%</div>
+  <div class="lb-ai-reason"><b>Why:</b> {html_escape(active_match['reason'] or '(no reason)')}</div>
 </div>
 """,
                     unsafe_allow_html=True,
@@ -476,10 +476,10 @@ with tab_cite:
 
                 already_cited = active_match["chunk_id"] in active_para["citations"]
                 if already_cited:
-                    st.success("✅ 已插入引用到右侧段落")
+                    st.success("✅ Citation inserted into the paragraph")
                 else:
                     if st.button(
-                        "➡️  采纳并插入引用至右侧",
+                        "➡️  Insert this citation",
                         type="primary",
                         use_container_width=True,
                         key="insert-cite",
@@ -487,9 +487,9 @@ with tab_cite:
                         active_para["citations"].append(active_match["chunk_id"])
                         st.rerun()
             elif manual:
-                st.caption("📌 手动查阅模式 — 点击草稿段落可恢复 AI 联动")
+                st.caption("📌 Manual browse mode — click a draft paragraph to resume AI suggestions")
             else:
-                st.caption("点击右侧任一段落以查看 AI 引用建议")
+                st.caption("Click any paragraph on the right to see AI citation suggestions")
 
             st.markdown("---")
             for cid in info["chunk_ids"]:
@@ -545,9 +545,9 @@ with tab_cite:
                         )
                     badge = ""
                     if n_matches > 0 and n_cites < n_matches:
-                        badge = f' <span class="lb-suggest">✨ {n_matches} 个建议</span>'
+                        badge = f' <span class="lb-suggest">✨ {n_matches} suggestion{"s" if n_matches > 1 else ""}</span>'
                     elif n_matches > 0 and n_cites >= n_matches:
-                        badge = ' <span class="lb-done">✅ 全部引用</span>'
+                        badge = ' <span class="lb-done">✅ all cited</span>'
                     cls = "lb-para active" if is_active else "lb-para"
                     st.markdown(
                         f'<div class="{cls}">{text_html}{cite_sup}{badge}</div>',
