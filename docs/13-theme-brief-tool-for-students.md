@@ -1,8 +1,8 @@
 # AI Buildathon — Theme Brief: Tool for Students
 
-> 来源：[Google Doc](https://docs.google.com/document/u/0/d/10X73Wstk9Y23TCgVrfdkwIvZsk6KRODccW50czfq_4A/mobilebasic?pli=1)
-> 日期：2026-05-02
-> 组织：ANU AIMSOC & ANUEC
+> Source: [Google Doc](https://docs.google.com/document/u/0/d/10X73Wstk9Y23TCgVrfdkwIvZsk6KRODccW50czfq_4A/mobilebasic?pli=1)
+> Date: 2026-05-02
+> Organisers: ANU AIMSOC & ANUEC
 
 ---
 

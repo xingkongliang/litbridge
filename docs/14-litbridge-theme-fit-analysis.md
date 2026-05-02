@@ -1,79 +1,78 @@
-# LitBridge × Theme Brief 对照分析
+# LitBridge × Theme Brief — Fit Analysis
 
-> 日期：2026-05-02
-> 背景：ANU AI Buildathon — Theme: Tool for Students
-
----
-
-## 核心挑战对照
-
-| 要求 | LitBridge |
-|------|-----------|
-| 帮学生解决**真实**学术问题 | ✅ 写论文找引用是每个研究生的真实痛点 |
-| 不是通用 chatbot | ✅ 有明确的两条工作流（文章补引用 / Topic 查文献） |
-| 有清晰的 workflow | ✅ 上传 PDF → 系统索引 → 输入文章/Topic → 获取推荐 |
-| 可演示的价值 | ✅ 90 秒内能看到从文章到引用推荐的全过程 |
+> Date: 2026-05-02
+> Context: ANU AI Buildathon — Theme: Tool for Students
 
 ---
 
-## Focus Area 匹配分析
+## Central-challenge fit
 
-**目标方向：The Struggling Learner** — 帮学生理解困难的课程内容。
-
-| 期望 | LitBridge | 匹配 |
-|------|-----------|------|
-| 诊断学生不理解什么 | LitBridge 不诊断"学生哪里不懂"，而是帮找文献支撑 | ⚠️ 偏弱 |
-| 用例子/步骤/类比解释概念 | 不做。LitBridge 不解释概念本身 | ❌ |
-| 包含练习题、反馈 | 不做 | ❌ |
-| 引导主动学习，不给直接答案 | 推荐引用让学生自己去读原文，不是直接写好段落 | ✅ |
-
-### 风险点
-
-LitBridge 的核心是「文献匹配 + 引用推荐」，这更像是一个 productivity 工具（Overwhelmed Student 方向），但又不完全匹配 Overwhelmed Student 的「截止日期/任务管理」场景。
-
-评委可能质疑：**"这帮的是写论文的人，不是一个在挣扎学习的学生。"**
+| Requirement | LitBridge |
+|-------------|-----------|
+| Help students solve a **real** academic problem | ✅ Finding citations while writing is a real pain point for every grad student |
+| Not a generic chatbot | ✅ Two well-defined workflows (citation suggestions for a draft / Topic literature lookup) |
+| Clear workflow | ✅ Upload PDFs → system indexes → input draft / Topic → get suggestions |
+| Demonstrable value | ✅ Whole flow from draft to citation suggestion visible within 90 seconds |
 
 ---
 
-## 调整方案
+## Focus-area mapping
 
-### 方案 A：微调定位，强行贴合 Struggling Learner
+**Target direction: The Struggling Learner** — help students understand difficult course content.
 
-把功能包装成「阅读理解助手」：
-- 上传一批论文 PDF（阅读材料）
-- 学生输入"我不理解 Transformer 的 attention 机制"
-- 系统从论文库中找到相关段落，**总结解释**，并标注出处
-- 变成：**"帮学生在大量阅读材料中找到并理解相关内容"**
+| Expectation | LitBridge | Fit |
+|-------------|-----------|-----|
+| Diagnose what the student doesn't understand | LitBridge doesn't diagnose "where the student is stuck"; it helps them find supporting literature | ⚠️ Weak |
+| Explain concepts via examples / steps / analogies | Not done. LitBridge doesn't explain concepts themselves | ❌ |
+| Include practice questions and feedback | Not done | ❌ |
+| Encourage active learning rather than giving answers | Suggests citations so the student goes back to the source, not auto-writes the paragraph | ✅ |
 
-### 方案 B：转投 The Overwhelmed Student
+### Risk
 
-重新定义痛点：
-- "研究生被 30 篇论文淹没，不知道哪篇和自己的研究相关"
-- LitBridge = 文献过滤器 + 优先级排序
-- 更自然，但也不是完美匹配
+LitBridge's core is "literature matching + citation suggestion", which feels more like a productivity tool (Overwhelmed Student territory), but it doesn't perfectly match the deadline/task-management framing of Overwhelmed Student either.
 
-### 方案 C（推荐）：双面包装
+Judges may push back: **"This helps people writing papers, not a student who is struggling to learn."**
 
-产品名叫 LitBridge，核心不变，但 pitch 时说：
+---
+
+## Possible adjustments
+
+### Option A: tweak positioning to fit Struggling Learner
+
+Reframe as a "reading-comprehension assistant":
+- Upload a batch of paper PDFs (reading material)
+- Student types "I don't understand the attention mechanism in Transformers"
+- System finds relevant sections from the paper library, **summarises and explains**, and cites the source
+- Becomes: **"help students find and understand relevant content within a large reading list"**
+
+### Option B: pivot to The Overwhelmed Student
+
+Reframe the pain point:
+- "Grad students are drowning in 30 papers and don't know which ones are relevant to their research"
+- LitBridge = literature filter + priority ranking
+- More natural, but still not a perfect fit
+
+### Option C (recommended): dual framing
+
+Keep the LitBridge name and core unchanged, but pitch it as:
 
 > "The Struggling Learner who is drowning in reading lists and doesn't know which papers actually matter for their assignment."
 
-把「找引用」包装成「从 30 篇论文中找到你最需要读的那 3 篇」，重点放在 **"帮你读对东西"** 而不是 "帮你写引用"。Demo 时先展示 Topic → 找到最相关文献（学习导向），再展示文章 → 推荐插入（写作导向）。
+Reframe "find a citation" as "find the 3 papers you actually need to read out of 30", emphasising **"helping you read the right thing"** instead of "helping you cite". In the demo, show Topic → most relevant literature first (learning-oriented), then draft → citation suggestions (writing-oriented).
 
 ---
 
-## 评分总结
+## Scoring summary
 
-| 维度          | 评分     | 说明                         |
-| ----------- | ------ | -------------------------- |
-| 主题匹配        | ⚠️ 3/5 | 功能上偏 productivity，需要重新包装叙事 |
-| 不是 chatbot  | ✅ 5/5  | 完全不是                       |
-| 清晰 workflow | ✅ 5/5  | 输入→处理→输出很清晰                |
-| 90s 可演示     | ✅ 4/5  | 需要准备好 mock 数据              |
-| AI 必要性      | ✅ 5/5  | 语义匹配和总结必须 AI               |
-| 8h 可行       | ✅ 4/5  | RAG 管线成熟，Streamlit 快速出 UI  |
-|             |        |                            |
+| Dimension | Score | Note |
+|-----------|-------|------|
+| Theme fit | ⚠️ 3/5 | Function leans productivity; needs re-framed narrative |
+| Not a chatbot | ✅ 5/5 | Definitely not |
+| Clear workflow | ✅ 5/5 | Input → process → output is crisp |
+| Demoable in 90s | ✅ 4/5 | Need to prep mock data |
+| Necessity of AI | ✅ 5/5 | Semantic matching and summarisation require AI |
+| Feasible in 8h | ✅ 4/5 | RAG pipelines are mature, Streamlit gets UI fast |
 
-### 关键结论
+### Key takeaway
 
-别把 LitBridge 定位成「引用管理工具」，定位成 **"帮学生在海量文献中找到真正需要读的那几篇"**。评委买的是"帮挣扎的学生"这个故事，不是"帮写论文的人省时间"。
+Don't position LitBridge as a "citation manager". Position it as **"help students find the few papers that actually matter in a sea of literature"**. Judges are buying the story of "help a struggling student", not "save time for someone writing a paper".
