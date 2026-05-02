@@ -242,12 +242,11 @@ _library_items = sorted(
 LIBRARY = dict(_library_items)
 
 n_papers = len(LIBRARY)
-avg_chunks = (len(chunks) / n_papers) if n_papers else 0
 
 c1, c2, c3 = st.columns(3)
-c1.metric("Papers loaded", n_papers)
-c2.metric("Chunks indexed", len(chunks))
-c3.metric("Avg chunks / paper", f"{avg_chunks:.1f}")
+c1.metric("Papers in library", n_papers, help="Reference papers indexed and searchable in the demo corpus.")
+c2.metric("Searchable segments", len(chunks), help="Section-aware chunks the retriever scores against your draft paragraph.")
+c3.metric("Citation model", MODEL, help="Claude model that judges relevance and writes the inline citation marker.")
 
 tab_cite, tab_topic = st.tabs(["✍️ Smart Cite-Back", "🔍 Topic Search"])
 
@@ -590,10 +589,10 @@ with tab_topic:
         "How do generative agents simulate believable human-like behavior?",
         "Embodied LLM agents: how do they recover from low-level execution failures?",
     ]
-    chosen = st.selectbox("Sample topics", [samples[0]] + samples[1:], key="topic_sample")
+    chosen = st.selectbox("Sample topics", samples, key="topic_sample")
     topic = st.text_input(
         "Topic / research question",
-        value=chosen if chosen != "—" else "",
+        value=chosen,
         max_chars=200,
         placeholder="e.g. how does chain-of-thought prompting improve reasoning?",
     )
