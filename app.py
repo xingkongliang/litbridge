@@ -218,7 +218,10 @@ if LOGO_PATH.exists():
     hero_l.image(str(LOGO_PATH), width=72)
 with hero_r:
     st.title("LitBridge")
-    st.caption("Your literature library × your paper — AI connects them.")
+    st.caption(
+        "Your literature library × your paper — AI finds the evidence for the paragraph "
+        "you are writing now."
+    )
 
 chunks, embeddings = get_index()
 chunk_idx_by_id = {id(c): i for i, c in enumerate(chunks)}
@@ -257,7 +260,11 @@ with tab_cite:
 
     if st.session_state.analysis is None:
         # ─ Input form ─
-        st.subheader("Paragraph-by-paragraph citation suggestions")
+        st.subheader("Find citations for the draft paragraph you are writing")
+        st.caption(
+            "Start with the bundled sample to see LitBridge match draft paragraphs to "
+            "evidence from a 13-paper LLM-agent library."
+        )
         src = st.radio(
             "Input source",
             [f"Use sample (`{SAMPLE_DOCX.name}`)", "Upload .docx", "Paste text"],
@@ -288,26 +295,46 @@ with tab_cite:
         targets = [p for p in body_paragraphs if is_substantive(p)]
         st.caption(
             f"Total paragraphs: {len(body_paragraphs)} · "
-            f"substantive (≥150 chars, prose): **{len(targets)}** "
-            f"(headers / equations / references stripped)"
+            f"citation-ready paragraphs: **{len(targets)}** "
+            f"(short headings, equations, and references skipped)"
         )
 
+        default_max_n = min(4, len(targets)) if targets else 0
+        max_n = default_max_n
+        k_ret = 3
         if targets:
-            max_n = st.slider(
-                "How many paragraphs to analyze",
-                1,
-                len(targets),
-                min(4, len(targets)),
-            )
+            with st.expander("Advanced demo settings"):
+                max_n = st.slider(
+                    "Paragraphs to analyze",
+                    1,
+                    len(targets),
+                    default_max_n,
+                    help="Default keeps the demo fast while showing multiple citation matches.",
+                )
+                k_ret = st.slider(
+                    "Citation candidates per paragraph",
+                    1,
+                    5,
+                    3,
+                    help="Higher values show more alternatives but take longer to score.",
+                )
         else:
-            max_n = 0
-            st.info("No substantive paragraphs found. Upload or paste longer prose paragraphs.")
-        k_ret = st.slider("Top-K candidates per paragraph", 1, 5, 3)
+            st.info("No citation-ready paragraphs found. Upload or paste longer prose paragraphs.")
 
-        if st.button("🚀 Analyze", type="primary", disabled=not targets):
+        if src.startswith("Use sample"):
+            analyze_label = "🚀 Analyze sample draft"
+        elif src == "Upload .docx":
+            analyze_label = "🚀 Analyze uploaded draft"
+        else:
+            analyze_label = "🚀 Analyze pasted text"
+
+        if st.button(analyze_label, type="primary", disabled=not targets):
             anth_key = _secret("ANTHROPIC_API_KEY")
             if not anth_key:
-                st.error("ANTHROPIC_API_KEY missing.")
+                st.error(
+                    "Claude API key is missing, so the live citation scoring cannot run. "
+                    "Set `ANTHROPIC_API_KEY` in Streamlit secrets or `.env`."
+                )
                 st.stop()
 
             paragraphs_data: list[dict] = []
@@ -377,7 +404,7 @@ with tab_cite:
         head_l, head_r = st.columns([4, 1])
         head_l.caption(
             f"📝 **{analysis['title']}** · {len(analysis['paragraphs'])} paragraphs · "
-            "click a paragraph on the right to see AI suggestions"
+            "click a draft paragraph to inspect its matched source"
         )
         if head_r.button("🔄 New analysis", use_container_width=True, key="reset"):
             st.session_state.analysis = None
@@ -452,7 +479,7 @@ with tab_cite:
                 st.markdown(
                     f"""
 <div class="lb-ai-card">
-  <div class="lb-ai-title">✨ AI Citation Suggestion · match {pct}%</div>
+  <div class="lb-ai-title">✨ Citation evidence · relevance {pct}%</div>
   <div class="lb-ai-reason"><b>Why:</b> {html_escape(active_match['reason'] or '(no reason)')}</div>
 </div>
 """,
@@ -487,9 +514,9 @@ with tab_cite:
                         active_para["citations"].append(active_match["chunk_id"])
                         st.rerun()
             elif manual:
-                st.caption("📌 Manual browse mode — click a draft paragraph to resume AI suggestions")
+                st.caption("📌 Browsing library manually — click a draft paragraph to resume citation matches")
             else:
-                st.caption("Click any paragraph on the right to see AI citation suggestions")
+                st.caption("Click any draft paragraph to see citation evidence")
 
             st.markdown("---")
             for cid in info["chunk_ids"]:
@@ -556,25 +583,29 @@ with tab_cite:
 
 # ─── Topic Search ──────────────────────────────────────────────────────────
 with tab_topic:
-    st.subheader("Topic → multi-paper summary")
+    st.subheader("Ask a topic question across the paper library")
     samples = [
         "How does chain-of-thought prompting improve reasoning in LLMs?",
         "What role does RLHF play in aligning language models with human intent?",
         "How do generative agents simulate believable human-like behavior?",
         "Embodied LLM agents: how do they recover from low-level execution failures?",
     ]
-    chosen = st.selectbox("Sample topics", ["—"] + samples, key="topic_sample")
+    chosen = st.selectbox("Sample topics", [samples[0]] + samples[1:], key="topic_sample")
     topic = st.text_input(
         "Topic / research question",
         value=chosen if chosen != "—" else "",
         max_chars=200,
         placeholder="e.g. how does chain-of-thought prompting improve reasoning?",
     )
-    k_topic = st.slider("Top-K sources", 3, 10, 5, key="topic_k")
+    with st.expander("Advanced search settings"):
+        k_topic = st.slider("Sources to retrieve", 3, 10, 5, key="topic_k")
     if st.button("🔍 Search & summarize", type="primary", disabled=not topic.strip()):
         anth_key = _secret("ANTHROPIC_API_KEY")
         if not anth_key:
-            st.error("ANTHROPIC_API_KEY missing.")
+            st.error(
+                "Claude API key is missing, so the live summary cannot run. "
+                "Set `ANTHROPIC_API_KEY` in Streamlit secrets or `.env`."
+            )
             st.stop()
         with st.spinner("Retrieving sources…"):
             hits, mode = retrieve_for_text(topic, k=k_topic)
