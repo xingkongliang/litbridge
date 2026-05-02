@@ -1,0 +1,22 @@
+name: Keep Alive
+
+on:
+  schedule:
+    # Every 5 minutes — minimum interval allowed by GitHub Actions cron.
+    # Note: GitHub may delay scheduled runs by 5–15 min during peak load.
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Ping LitBridge (follow redirects, browser-ish UA)
+        run: |
+          curl -L -sS -o /dev/null \
+            -w "HTTP %{http_code} · total %{time_total}s · final %{url_effective}\n" \
+            -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36" \
+            -H "Accept: text/html,application/xhtml+xml" \
+            --max-time 60 \
+            https://litbridge.streamlit.app/
