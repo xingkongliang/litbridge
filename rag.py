@@ -8,11 +8,10 @@ from pathlib import Path
 
 import fitz
 import numpy as np
-import voyageai
 from docx import Document
 
-EMBED_MODEL = "voyage-context-3"
-EMBED_DIM = 1024
+EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBED_DIM = 384
 TARGET_TOKENS = 500
 MAX_TOKENS = 700
 REF_HEADERS = ("references", "bibliography", "参考文献")
@@ -104,15 +103,23 @@ def is_substantive(paragraph: str, min_chars: int = 150) -> bool:
     return alpha / len(paragraph) > 0.5
 
 
-def embed_voyage(client: voyageai.Client, texts: list[str], input_type: str) -> np.ndarray:
-    """Batched Voyage embedding. input_type: 'document' for indexing, 'query' for retrieval."""
-    out = []
-    BATCH = 64
-    for i in range(0, len(texts), BATCH):
-        batch = texts[i : i + BATCH]
-        resp = client.embed(batch, model=EMBED_MODEL, input_type=input_type)
-        out.extend(resp.embeddings)
-    return np.array(out, dtype=np.float32)
+def load_embedder():
+    """Lazy import + load — keeps cold-start path light when not needed."""
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(EMBED_MODEL)
+
+
+def embed_texts(model, texts: list[str]) -> np.ndarray:
+    """Batched local embedding, L2-normalized so retrieval can be a dot product."""
+    arr = model.encode(
+        texts,
+        batch_size=32,
+        show_progress_bar=False,
+        normalize_embeddings=True,
+        convert_to_numpy=True,
+    )
+    return arr.astype(np.float32)
 
 
 def save_index(index_dir: Path, chunks: list[Chunk], embeddings: np.ndarray) -> None:

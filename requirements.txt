@@ -1,7 +1,7 @@
 streamlit>=1.30
 PyMuPDF>=1.23
 anthropic>=0.40
-voyageai>=0.2
+sentence-transformers>=2.7
 python-docx>=1.0
 python-dotenv>=1.0
 numpy>=1.26

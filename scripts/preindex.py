@@ -7,17 +7,15 @@ Usage:
 """
 from __future__ import annotations
 
-import os
 import sys
 import time
 from pathlib import Path
 
 import numpy as np
-import voyageai
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from rag import Chunk, chunk_pdf, embed_voyage, save_index  # noqa: E402
+from rag import Chunk, chunk_pdf, embed_texts, load_embedder, save_index  # noqa: E402
 
 load_dotenv()
 ROOT = Path(__file__).resolve().parent.parent
@@ -26,12 +24,6 @@ INDEX_DIR = ROOT / "data" / "index"
 
 
 def main() -> None:
-    api_key = os.environ.get("VOYAGE_API_KEY")
-    if not api_key:
-        sys.exit("VOYAGE_API_KEY not set (put in .env or export).")
-
-    client = voyageai.Client(api_key=api_key)
-
     sources = [
         (PAPERS_DIR / "related-papers", "related"),
         (PAPERS_DIR / "unrelated-papers", "unrelated"),
@@ -56,12 +48,11 @@ def main() -> None:
     if not all_chunks:
         sys.exit("No chunks produced.")
 
-    print("Embedding via Voyage voyage-context-3 ...")
+    print("Loading sentence-transformers model (first run downloads ~80MB)...")
+    model = load_embedder()
+    print(f"Embedding {len(all_chunks)} chunks (already L2-normalized)...")
     t0 = time.time()
-    embeddings = embed_voyage(client, [c.text for c in all_chunks], "document")
-    # Normalize once at index time so retrieval is just dot product
-    norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
-    embeddings = embeddings / np.maximum(norms, 1e-9)
+    embeddings = embed_texts(model, [c.text for c in all_chunks])
     print(f"  done in {time.time() - t0:.1f}s, shape={embeddings.shape}")
 
     save_index(INDEX_DIR, all_chunks, embeddings)

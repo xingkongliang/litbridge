@@ -24,7 +24,7 @@
 | 部署 | Streamlit Community Cloud |
 | PDF | PyMuPDF (`fitz`) |
 | 分块 | 段落合并 400-700 tokens；检测 `References` / `Bibliography` 截断（极简版，不写复杂正则） |
-| Embedding | Voyage AI `voyage-context-3` |
+| Embedding | `sentence-transformers/all-MiniLM-L6-v2`（384-dim，本地）。**实测 Voyage 免费 tier 限速 3 RPM / 10K TPM**，demo 时每次查询要等 20s，不可用；切回本地完全消除限速 |
 | 向量库 | ChromaDB 内存 client |
 | LLM | Claude Haiku 4.5（统一一个模型，保留切 Sonnet 4.6 的常量备用） |
 

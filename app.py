@@ -7,13 +7,13 @@ from pathlib import Path
 
 import numpy as np
 import streamlit as st
-import voyageai
 from dotenv import load_dotenv
 
 from rag import (
     Chunk,
-    embed_voyage,
+    embed_texts,
     is_substantive,
+    load_embedder,
     load_index,
     parse_docx,
     retrieve,
@@ -52,12 +52,9 @@ def get_index() -> tuple[list[Chunk], np.ndarray]:
 
 
 @st.cache_resource
-def get_voyage() -> voyageai.Client:
-    key = _secret("VOYAGE_API_KEY")
-    if not key:
-        st.error("VOYAGE_API_KEY missing — set it in Streamlit Cloud Secrets.")
-        st.stop()
-    return voyageai.Client(api_key=key)
+def get_embedder():
+    """Load sentence-transformers once and reuse across reruns."""
+    return load_embedder()
 
 
 def _label_badge(label: str) -> str:
@@ -150,13 +147,13 @@ with tab_cite:
         if not anth_key:
             st.error("ANTHROPIC_API_KEY missing.")
             st.stop()
-        client = get_voyage()
+        embedder = get_embedder()
         progress = st.progress(0.0, text="Working…")
         for i, para in enumerate(targets[:max_n], 1):
             progress.progress(i / max_n, text=f"Paragraph {i}/{max_n}")
             with st.expander(f"Paragraph {i} ({len(para)} chars)", expanded=True):
                 st.markdown(f"> {para[:400]}{'…' if len(para) > 400 else ''}")
-                q_emb = embed_voyage(client, [para], "query")[0]
+                q_emb = embed_texts(embedder, [para])[0]
                 hits = retrieve(q_emb, chunks, embeddings, k=k * 2)
                 # de-dup by file, keep top per file
                 seen, dedup = set(), []
@@ -197,9 +194,9 @@ with tab_topic:
         if not anth_key:
             st.error("ANTHROPIC_API_KEY missing.")
             st.stop()
-        client = get_voyage()
+        embedder = get_embedder()
         with st.spinner("Embedding query…"):
-            q_emb = embed_voyage(client, [topic], "query")[0]
+            q_emb = embed_texts(embedder, [topic])[0]
         hits = retrieve(q_emb, chunks, embeddings, k=k)
         with st.spinner("Synthesizing summary with Claude…"):
             summary = topic_summary(anth_key, topic, hits)

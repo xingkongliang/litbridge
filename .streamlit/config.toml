@@ -1,0 +1,7 @@
+[server]
+# 148MB of PDFs in data/ choke the default watcher. Disable entirely for demo.
+fileWatcherType = "none"
+runOnSave = false
+
+[browser]
+gatherUsageStats = false
