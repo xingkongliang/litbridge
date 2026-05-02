@@ -16,9 +16,9 @@ Built for the **ANU AI Buildathon 2026**.
 
 - **Frontend**: Streamlit
 - **PDF Parsing**: PyMuPDF
-- **Embeddings**: OpenAI text-embedding-3-small
+- **Embeddings**: Anthropic Voyage (via API) / Sentence-Transformers (local)
 - **Vector DB**: ChromaDB
-- **LLM**: GPT-4o-mini
+- **LLM**: Claude 3.5 Sonnet (Anthropic)
 
 ## Getting Started
 
