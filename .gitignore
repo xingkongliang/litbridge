@@ -7,7 +7,5 @@ __pycache__/
 # Top-level reference/ holds the React design mock (UI.ts) — not part of runtime.
 /reference/
 
-# PDFs are heavy — don't commit. Runtime loads pre-indexed embeddings.
-data/papers/material/
-data/papers/AI-Agent/reference/
-data/papers/AI-Agent/*.pdf
+# Data directory — pre-indexed embeddings, papers, sample drafts. Generated at runtime.
+data/
